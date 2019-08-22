@@ -1,0 +1,316 @@
+extern const char trbnet_version[];
+
+extern unsigned int trb_debug;
+
+/* ---------------------------------------------------------------------- */
+
+int init_ports();
+
+int trb_register_read(uint16_t trb_address,                             
+                      uint16_t reg_address,                             
+                      uint32_t* data,
+                      unsigned int dsize);                                 
+  
+int trb_registertime_read(uint16_t trb_address,                             
+                      uint16_t reg_address,                             
+                      uint32_t* data,
+                      unsigned int dsize); 
+    
+int trb_register_read_mem(uint16_t trb_address,                             
+                          uint16_t reg_address,                             
+                          uint8_t option,
+                          uint16_t size,
+                          uint32_t* data,
+                          unsigned int dsize);
+  
+int trb_registertime_read_mem(uint16_t trb_address,
+                              uint16_t reg_address,                       
+                              uint8_t option,
+                              uint16_t size,
+                              uint32_t* data,
+                              unsigned int dsize);                          
+                        
+int trb_register_write(uint16_t trb_address,                            
+                       uint16_t reg_address,                            
+                       uint32_t value);                                 
+                                                                        
+int trb_register_write_mem(uint16_t trb_address,                             
+                           uint16_t reg_address,                             
+                           uint8_t option,
+                           const  uint32_t* data,
+                           uint16_t size);
+
+int trb_read_uid(uint16_t trb_address,                                  
+                 uint32_t* data,
+                 unsigned int dsize);                                 
+
+int trb_set_address(uint64_t uid,
+                    uint8_t endpoint,
+                    uint16_t trb_address);
+
+
+int trb_ipu_data_read(uint8_t type,
+                      uint8_t trg_info,
+                      uint8_t trg_random,
+                      uint16_t trg_number,
+                      uint32_t* data, 
+                      unsigned int dsize);
+
+int trb_send_trigger(uint8_t type,
+                     uint32_t info,
+                     uint8_t random,
+                     uint16_t number);
+
+int trb_send_trigger_rich(uint8_t input,
+                          uint8_t type,
+                          uint32_t info,
+                          uint8_t random,
+                          uint16_t number);
+
+int trb_nettrace(uint16_t trb_address,
+                 uint32_t *data,
+                 unsigned int dsize);
+
+int trb_register_setbit(uint16_t trb_address,
+                        uint16_t reg_address,
+                        uint32_t bitMask);
+
+int trb_register_clearbit(uint16_t trb_address,
+                          uint16_t reg_address,
+                          uint32_t bitMask);
+
+int trb_register_loadbit(uint16_t trb_address,
+                         uint16_t reg_address,
+                         uint32_t bitMask,
+                         uint32_t bitValue);
+
+int trb_fifo_flush(uint8_t channel);
+
+int network_reset();
+
+int com_reset();
+  
+/* ---------------------------------------------------------------------- */
+
+/* This library provides several function to access the trbnet on a 
+   Etrax-Board.
+   
+*/
+
+/************************************************************************/
+/* In case of any error the gloabl varianble 'trb_errno' will be set,   */
+/* see trberror.h for details.                                          */
+/************************************************************************/
+                                                                        
+                                                                        
+/************************************************************************/
+/* int trb_register_read(uint16_t trb_address,                             
+                         uint16_t reg_address,                             
+                         uint32_t* data,
+                         unsigned int dsize);
+
+   trb_address: TRB-Address of the TRB-Endpoint
+   reg_address: Register-Address to be read from, broadcasts are supported
+   data:        Pointer to a uint32_t Data-Buffer 
+   dsize:       Size of the Data-Buffer in units of 32bit-words
+   
+   ReturnValue: == -1 on error, trberrno will be set  
+                >=  0 number of 32bit-words which were stored in Data-Buffer
+   
+   TRB-Channel used: slow control (3)
+   
+   reads the register reg_address of a TRB-Endpoint with address 
+   trb_address. The received data is stored in the Data-Buffer data.
+   
+   The format of the Data-Buffer is:
+    first word:  TRB-Address of the sender
+    second word: register value
+   
+   --> The size of the Data-Buffer must be at least >= 2
+                                                                        
+*/
+
+
+/************************************************************************/
+/* int trb_register_read_mem(uint16_t trb_address,                             
+                             uint16_t reg_address,                             
+                             uint8_t option,
+                             uint16_t size,
+                             uint32_t* data,
+                             unsigned int dsize);
+
+   trb_address:    TRB-Address of the TRB-Endpoint
+   reg_address:    Register-Address to be read from, broadcasts are supported
+   uint8_t option: 
+   uint16_t size:  Number of 32Bit-words to be read 
+   data:           Pointer to a uint32_t Data-Buffer 
+   dsize:          Size of the Data-Buffer in units of 32bit-words
+   
+   ReturnValue: == -1 on error, trberrno will be set  
+                >=  0 number of 32bit-words which were stored in Data-Buffer
+   
+   TRB-Channel used: slow control (3)
+   
+   reads the register reg_address of a TRB-Endpoint with address 
+   trb_address. The received data is stored in the Data-Buffer data.
+   
+   The format of the Data-Buffer is:
+    first word:  TRB-Address of the sender (Lower 2Bytes), len (Upper 2bytes)
+    second word: register value
+   
+   --> The size of the Data-Buffer must be at least >= 2
+                                                                        
+*/
+
+
+/************************************************************************/
+/* int trb_register_write(uint16_t trb_address,                            
+                          uint16_t reg_address,                            
+                          uint32_t value);   
+
+   trb_address: TRB-Address of the TRB-Endpoint, broadcasts are supported
+   reg_address: Register-Address to be written to
+   value:       32bit-word to be writen to the register
+   
+   ReturnValue: == -1 on error, trberrno will be set   
+                
+   TRB-Channel used: slow control (3)
+   
+   writes the value to the register reg_address of a TRB-Endpoint with address 
+   trb_address.
+*/
+
+/************************************************************************/
+/* int trb_read_uid(uint16_t trb_address,
+                    uint32_t* data,
+                    unsigned int dsize);  
+                    
+   trb_address: TRB-Address of the TRB-Endpoint, broadcasts are supported
+   data:        Pointer to a uint32_t Data-Buffer 
+   dsize:       Size of the Data-Buffer in units of 32bit-words
+
+   ReturnValue: == -1 on error, trberrno will be set
+                >=  0 number of 32bit-words which were stored in Data-Buffer
+
+   TRB-Channel used: slow control (3)
+           
+   reads the Unique-Id of a TRB-Endpoint with address trb_address. The 
+   received data is stored in the Data-Buffer data.
+   
+   The format of the Data-Buffer is:
+    first word:  UID High-32Bit Word
+    second word: UID Low-32Bit Word
+    third word:  Endpoint Number
+    fourth word: TRB-Address of the sender
+
+    --> The size of the Data-Buffer must be at least >= 4
+
+*/
+
+/************************************************************************/
+/* int trb_set_address(uint64_t uid,
+                       uint8_t endpoint,
+                       uint16_t trb_address);
+                       
+   uint64_t uid:           the UID of the Endpoint
+   uint8_t endpoint:       Number of the TRBNet-Endpoint
+   uint16_t trb_address:   the new TRB-Netaddress, broadcasts are not supported
+   
+   ReturnValue: == -1 on error, trberrno will be set
+                ==  0 on success
+   
+   TRB-Channel used: slow control (3)
+   
+   sets a new TRB-Address trb_address of the give TRFNet-endpoint.
+*/
+
+/************************************************************************/
+/* int trb_ipu_data_read(uint8_t type,
+                         uint8_t trg_info,
+                         uint8_t trg_random,
+                         uint16_t trg_number,
+                         uint32_t* data, 
+                         unsigned int dsize);
+
+    data:        Pointer to a uint32_t Data-Buffer 
+    dsize:       Size of the Data-Buffer in units of 32bit-words
+    
+    ReturnValue: == -1 on error, trberrno will be set
+                 >=  0 0 number of 32bit-words which were stored in Data-Buffer
+
+    send a request to all TRBNet-Endpoints to readout the IPU-Data. The IPU 
+    Datastream will be stored in the user DataBufer.
+*/
+
+/************************************************************************/
+/* int trb_send_trigger(uint8_t type,
+                       uint32_t info,
+                       uint8_t random,
+                       uint16_t number);
+*/
+
+typedef enum {
+  TRB_NONE = 0,
+  TRB_TX_BUSY = 1,
+  TRB_FIFO_NOT_EMPTY = 2,
+  TRB_FIFO_TIMEOUT = 3,
+  TRB_FIFO_HEADERS = 4,
+  TRB_FIFO_SEQUENZ = 5,
+  TRB_FIFO_INVALID_MODE = 6,
+  TRB_FIFO_INCOMPLETE_PACKAGE = 7,
+  TRB_FIFO_INVALID_HEADER = 8,
+  TRB_FIFO_MISSING_TERM_HEADER = 9,
+  TRB_FAILED_WAIT_IS_VALID = 10,
+  TRB_FAILED_WAIT_IS_NOT_VALID = 11,
+  TRB_USER_BUFFER_OVF = 12,
+  TRB_INVALID_CHANNEL = 13,
+  TRB_INVALID_PKG_NUMBER = 14,
+  TRB_STATUS_ERROR = 15,
+  TRB_INVALID_ADDRESS = 16,
+  TRB_INVALID_LENGTH = 17,
+  TRB_ENDPOINT_NOT_REACHED = 18,
+  TRB_DMA_UNAVAILABLE = 19,
+  TRB_DMA_TIMEOUT = 20,
+  TRB_READMEM_INVALID_SIZE = 21,
+  TRB_HDR_DLEN = 22,
+  TRB_PEXOR_OPEN = 23,
+  TRB_SEMAPHORE = 24,
+  TRB_FIFO_SHARED_MEM = 25,
+  TRB_STATUS_WARNING = 26,
+  TRB_RPC_ERROR = 27,
+  TRB_PEXOR_DATA_ERROR = 28,
+  TRB_PEXOR_DEVICE_ERROR = 29,
+  TRB_PEXOR_DEVICE_TRB_TIMEOUT = 30,
+  TRB_PEXOR_DEVICE_POLLING_TIMEOUT = 31,
+  TRB_PEXOR_DEVICE_DMA_EMPTY = 32,
+  TRB_PEXOR_DEVICE_INVALID_DMA_SIZE = 33,
+  TRB_PEXOR_DEVICE_LOST_CREDENTIAL = 34,
+  TRB_PEXOR_DEVICE_FIFO_TRANSFER = 35,
+  TRB_TRB3_CMD_NOT_SUPPORTED = 36,
+  TRB_TRB3_SOCKET_ERROR = 37,
+  TRB_TRB3_SOCKET_TIMEOUT = 38,
+  TRB_TRB3_INCOMPLETE_UDP = 39,
+  TRB_TRB3_DATA_ERROR = 40,
+  TRB_TRB3_INVALID_UDP_HEADER = 41
+} TRB_ERROR;
+
+/* last TRBNet-TermPackage */
+typedef struct {
+  uint16_t status_common;
+  uint16_t status_channel;
+  uint16_t sequence;
+  uint8_t channel;
+} TRB_TERM;
+
+extern int trb_errno;
+
+extern TRB_TERM trb_term;
+
+void trb_error(const char *s);
+
+const char* trb_strerror();
+
+
+const char* trb_errorstr(int trberrno);
+
+const char* trb_termstr(TRB_TERM term);
