@@ -1,4 +1,7 @@
 
+DAQOPSERVER ?= "not set - the tests might fail"
+LD_LIBRARY_PATH ?= "not set - the tests might fail"
+# should be something like /home/pklaus/phd/workrepos/trbnettools/trbnetd/
 
 .PHONY: all
 all: build
@@ -16,5 +19,17 @@ clean:
 	rm -f *.c
 
 .PHONY: test
-test: build
-	./test.py
+test: test0 test1 test2
+
+.PHONY: test0
+test0:
+	@echo DAQOPSERVER = "$(DAQOPSERVER)"
+	@echo LD_LIBRARY_PATH = "$(LD_LIBRARY_PATH)"
+
+.PHONY: test1
+test1:
+	./test1.py
+
+.PHONY: test2
+test2: build
+	./test2.py
